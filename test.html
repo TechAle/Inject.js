@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="inject.js"></script>
+    <script src="injectClassFile.js"></script>
+</head>
+<body>
+  <script>
+    let nuovoFile = new injectClass({
+      file: "this",
+      function: "nY",
+      pre: () => {
+        console.log("ciao")
+      }
+    });
+    nuovoFile.pre()
+  </script>
+</body>
+</html>

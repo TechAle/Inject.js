@@ -7,15 +7,44 @@
     <script src="injectClassFile.js"></script>
 </head>
 <body>
-  <script>
+<script>
     let nuovoFile = new injectClass({
-      file: "this",
-      function: "nY",
-      pre: () => {
-        console.log("ciao")
-      }
+        file: "document.location.origin",
+        method: "GET",
+        function: "nY",
+        pre: () => {
+            console.log("ciao")
+            document.open()
+            document.close()
+        }
     });
-    nuovoFile.pre()
-  </script>
+
+    let nuovoFile2 = new injectClass({
+        file: "https://territorial.io/favicon.ico",
+        method: "GET",
+        function: "nY",
+        pre: () => {
+            console.log("ciao")
+            document.open()
+            document.close()
+        }
+    });
+
+    let nuovoFile3 = new injectClass({
+        file: "https://territorial.io/favicon.ico",
+        method: "GET",
+        function: "nYY",
+        pre: () => {
+            console.log("ciao")
+            document.open()
+            document.close()
+        }
+    });
+
+    calculateLinks()
+
+    setTimeout(() => {console.log("ciao")}, 0)
+
+</script>
 </body>
 </html>

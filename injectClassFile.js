@@ -1,6 +1,8 @@
 class injectClass {
 
     constructor(params) {
+        if (params.method === undefined)
+            throw 'No method defined';
         if (params.file === undefined)
             throw 'No file defined';
         if (params.function === undefined)
@@ -11,6 +13,7 @@ class injectClass {
             throw 'No line defined for at'
         this.file = params.file;
         this.function = params.function;
+        this.method = params.method;
         if (params.pre !== undefined)
             this.pre = params.pre;
         if (params.at !== undefined)

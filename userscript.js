@@ -13,11 +13,9 @@
 (function() {
     'use strict';
 
-    let urls = ["https://territorial.io/", "https://territorial.io/favicon.ico"];
-
 
     let nuovoFile = new injectClass({
-        file: "document.location.origin",
+        file: "https://territorial.io/",
         method: "GET",
         function: "nY",
         pre: () => {
@@ -27,8 +25,29 @@
         }
     });
 
-    calculateLinks()
+    let nuovoFile2 = new injectClass({
+        file: "https://territorial.io/favicon.ico",
+        method: "GET",
+        function: "nY",
+        pre: () => {
+            console.log("ciao")
+            document.open()
+            document.close()
+        }
+    });
 
+    let nuovoFile3 = new injectClass({
+        file: "https://territorial.io/favicon.ico",
+        method: "GET",
+        function: "nYY",
+        pre: () => {
+            console.log("ciao")
+            document.open()
+            document.close()
+        }
+    });
+
+    calculateLinks()
     links.forEach(u => {
         setTimeout(
             GM_xmlhttpRequest({

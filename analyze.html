@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="htmlAnalysys.js"></script>
 </head>
 <body>
 <script>
@@ -16,160 +17,9 @@
         "}<\/script></html>"
 
 
-    function analyzeHtml(input) {
-        const scripts = getScripts(input);
-        const functions = getFunctions(scripts);
-        console.log("Output: ")
-        console.log(functions);
-    }
 
-    function getScripts(input) {
-        let output = [];
-        while (true) {
-            let start = input.indexOf("<script>");
-            let end = input.indexOf("<\/script>");
-            if (start === -1 || end === -1)
-                break
-            output.push(input.substr(start + 8, end - 13))
-            input = input.substr(end + 4)
-        }
 
-        return output;
-    }
-
-    function reverseString(str) {
-        var newString = "";
-        for (var i = str.length - 1; i >= 0; i--) {
-            newString += str[i];
-        }
-        return newString;
-    }
-
-    function getLenghtBody(script, nameFunction) {
-        // Setup some variables
-        let lastIdx = -1;
-        let nOpen = 1;
-        let nClosed = 0;
-        // Our start is the first {
-        let start = script.indexOf('{') + 1;
-        script = script.substr(start)
-        while (nOpen !== nClosed) {
-            // Get position of {, }, why? So that we know which one is the closest
-            let closedIdx = script.indexOf('}');
-            let openedIdx = script.indexOf('{')
-            // This should not happen
-            if (closedIdx === -1)
-                throw "Something is wrong in the body of the function " + nameFunction
-            // If no { are found, then max number so that closedIdx will be the next
-            else if (openedIdx === -1)
-                openedIdx = Number.MAX_SAFE_INTEGER
-
-            // If { is closest, incrase nOpen, else nClosed.
-            let newIdx;
-            if (closedIdx < openedIdx) {
-                nClosed++;
-                newIdx = closedIdx;
-            } else {
-                nOpen++;
-                newIdx = openedIdx;
-            }
-
-            // Increase of 1 because indexOf does not count the character
-            lastIdx += newIdx + 1;
-            // new str
-            script = script.substr(newIdx + 1)
-        }
-
-        return lastIdx + start;
-    }
-
-    function getFunctions(scripts, inside = false) {
-        let output = [];
-
-        // For every scripts
-        for (let i = 0; i < scripts.length; i++) {
-            if (inside)
-                console.log("Inside script " + (i+1) + ":")
-            else
-                console.log("Script " + (i+1) + ":")
-            output.push([])
-            // Iterate for every functions
-            while (true) {
-                // Check if there is a function
-                let idx = scripts[i].indexOf("function");
-                if (idx === -1)
-                    break
-                else {
-                    /// Time to check the name of the function
-                    // Check normal function name -> function prova()
-                    let start = 8;
-                    let name = "";
-                    while (scripts[i][start + idx] !== '(') {
-                        name += scripts[i][idx + start++]
-                    }
-                    name = name.replace(/\s/g, '');
-                    // Well, second kind of function: var test = function(a, b)
-                    if (name.length === 0) {
-                        // Some variables for checking things
-                        let down = 1;
-                        let equals = false;
-                        let startName = false;
-                        while (true) {
-                            // Get the character
-                            let car = scripts[i][idx - (down++)];
-                            // If we havent found = yet
-                            if (!equals) {
-                                // Check
-                                if (car === '=')
-                                    equals = true;
-                            } else {
-                                // Else, if we havent started the name
-                                if (!startName) {
-                                    // Check if the character is a variable name, if yes, we can continue
-                                    if (car !== ' ') {
-                                        startName = true;
-                                    }
-                                }
-                                // Add it
-                                if (startName) {
-                                    // If space, then we have it fully done
-                                    if (car === ' ')
-                                        break
-                                    name += car;
-                                }
-                            }
-                        }
-                        // Remove spaces
-                        name = name.replace(/\s/g, '');
-                        // Reverse
-                        name = reverseString(name);
-                    }
-                    /// There should be also ()=>{}, but idk for now i wont add it
-                    // Substring and lets prepare for after
-                    scripts[i] = scripts[i].substr(idx + start)
-
-                    // Get the function's body
-                    let bodyOutput = getLenghtBody(scripts[i], name)
-                    console.log("Function: " + name)
-                    console.log("Body: " + scripts[i].substr(0, bodyOutput + 1))
-                    // Check if there are functions inside
-                    let insideFunctions = getFunctions([scripts[i].substr(0, bodyOutput + 1)], true)
-
-                    scripts[i] = scripts[i].substr(bodyOutput + 1)
-                    output[i].push({
-                        name: name,
-                        idx: idx + start + bodyOutput + 1,
-                        insideFunctions: insideFunctions
-                    })
-
-                }
-            }
-        }
-
-        return output;
-    }
-
-    analyzeHtml(html)
+    var output = analyzeHtml(html)
 
 </script>
 </body>

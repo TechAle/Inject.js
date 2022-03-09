@@ -14,6 +14,26 @@ function analyzeHtml(input) {
     return functions;
 }
 
+// Calculate the index of a function (Why? Because, the index is relative of the function and not absolute)
+function calculateIdx(toInject) {
+    if (toInject.father == null)
+        return toInject.idx;
+    else
+        return toInject.idx + calculateIdx(toInject.father);
+}
+
+// Bubble sort
+function sortIdx(toSort) {
+    for(let i = 0; i < toSort.length; i++) {
+        for(let j = 0; j < toSort.length - i - 1; j++) {
+            if (toSort[j + 1].idx < toSort[j].idx) {
+                [toSort[j + 1], toSort[j]] = [toSort[j], toSort[j + 1]]
+            }
+        }
+    }
+    return toSort;
+}
+
 function getScripts(input) {
     let output = [];
     let before = 0;

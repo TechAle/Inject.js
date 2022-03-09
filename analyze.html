@@ -9,6 +9,18 @@
 </head>
 <body>
 <script>
+
+    let testNormale3 = new injectClass({
+        file: "none",
+        method: "none",
+        function: "testNew",
+        pre: () => {
+            console.log("pre")
+            return false
+        },
+        cancellable: true
+    });
+
     let testNormale = new injectClass({
         file: "none",
         method: "none",
@@ -47,6 +59,7 @@
 
     function findFunction(fun, output, fullDebug) {
         var toChecks = fun.split("=>")
+        // Get correct
         var toCheck = toChecks.shift();
         for(let scriptIdx = 0; scriptIdx < output.length; scriptIdx++) {
             for(let functionIdx = 0; functionIdx < output[scriptIdx].length; functionIdx++) {
@@ -62,10 +75,21 @@
 
     // Check if the file is correct (yes.)
     let thingsToInject = links[0].toInject;
+    /// Start to inject
+    // Get every functions, calculate the idx and put everything in a array
+    let toInject = []
     for(let i = 0; i < thingsToInject.length; i++) {
-        console.log(findFunction(thingsToInject[i].function, output, thingsToInject[i].function))
+        const functionToInject = findFunction(thingsToInject[i].function, output, thingsToInject[i].function)
+        toInject.push({
+            inject: thingsToInject[i],
+            function: functionToInject,
+            idx: calculateIdx(functionToInject)
+        })
     }
-
+    // Now, because of how it's done, i have to sort everything
+    sortIdx(toInject)
+    // We can finally inject
+    let copyHtml = html;
 
 </script>
 </body>

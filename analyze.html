@@ -4,10 +4,35 @@
     <meta charset="UTF-8">
     <title>Title</title>
     <script src="htmlAnalysys.js"></script>
+    <script src="inject.js"></script>
+    <script src="injectClassFile.js"></script>
 </head>
 <body>
 <script>
-    let html = "<html><script>function primo(){var a = 0} " +
+    let testNormale = new injectClass({
+        file: "none",
+        method: "none",
+        function: "primo",
+        pre: () => {
+            console.log("pre")
+        }
+    });
+
+    let testNormale2 = new injectClass({
+        file: "none",
+        method: "none",
+        function: "secondo_multiplo=>variabile_funzione",
+        pre: () => {
+            console.log("pre")
+            return false
+        },
+        cancellable: true
+    });
+
+    calculateLinks()
+
+    // Here we get as input the html
+    let html = "<html lang='it'><script> var token = 'si'; function primo(){var a = 0} " +
         "function secondo_multiplo(){" +
         "var variabile_funzione = function (a,b) {console.log('ciao')}" +
         "}<\/script><script>function nuovo_script_multiplo() {" +
@@ -16,10 +41,31 @@
         "}" +
         "}<\/script></html>"
 
-
-
-
+    // First we have to get every functions
     var output = analyzeHtml(html)
+
+
+    function findFunction(fun, output, fullDebug) {
+        var toChecks = fun.split("=>")
+        var toCheck = toChecks.shift();
+        for(let scriptIdx = 0; scriptIdx < output.length; scriptIdx++) {
+            for(let functionIdx = 0; functionIdx < output[scriptIdx].length; functionIdx++) {
+                if (output[scriptIdx][functionIdx].name === toCheck) {
+                    if (toChecks.length > 0)
+                        return findFunction(toChecks.join("=>"), output[scriptIdx][functionIdx].insideFunctions, fun)
+                    else return output[scriptIdx][functionIdx]
+                }
+            }
+        }
+        throw "No method found " + fullDebug
+    }
+
+    // Check if the file is correct (yes.)
+    let thingsToInject = links[0].toInject;
+    for(let i = 0; i < thingsToInject.length; i++) {
+        console.log(findFunction(thingsToInject[i].function, output, thingsToInject[i].function))
+    }
+
 
 </script>
 </body>

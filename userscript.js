@@ -20,8 +20,6 @@
         function: "nY",
         pre: () => {
             console.log("ciao")
-            document.open()
-            document.close()
         }
     });
 
@@ -31,8 +29,6 @@
         function: "nY",
         pre: () => {
             console.log("ciao")
-            document.open()
-            document.close()
         }
     });
 
@@ -42,8 +38,6 @@
         function: "nYY",
         pre: () => {
             console.log("ciao")
-            document.open()
-            document.close()
         }
     });
 

@@ -16,11 +16,16 @@ class injectClass {
         this.method = params.method;
         if (params.pre !== undefined)
             this.pre = params.pre;
+        else this.pre = null
         if (params.at !== undefined)
             this.at = params.at;
+        else this.at = null
         if (params.post !== undefined)
             this.post = params.post;
-        this.cancellable = params.cancellable === undefined ? false : params.cancellable;
+        else this.post = null
+        this.cancellablePre = params.cancellablePre === undefined ? false : params.cancellablePre;
+        this.cancellableAt = params.cancellableAt === undefined ? false : params.cancellableAt;
+        this.cancellablePost = params.cancellablePost === undefined ? false : params.cancellablePost;
         everyModifications.push(this)
     }
 

@@ -20,3 +20,9 @@ function calculateLinks() {
         }
     })
 }
+
+function giveNames() {
+    Object.keys(functionsToInject).forEach(e => {
+        functionsToInject[e].name = e;
+    })
+}

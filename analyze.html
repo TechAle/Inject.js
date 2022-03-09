@@ -10,36 +10,41 @@
 <body>
 <script>
 
-    let testNormale3 = new injectClass({
-        file: "none",
-        method: "none",
-        function: "testNew",
-        pre: () => {
-            console.log("pre")
-            return false
-        },
-        cancellable: true
-    });
+    const functionsToInject = {
+        "testNormale3" : new injectClass({
+            file: "none",
+            method: "none",
+            function: "testNew",
+            pre: () => {
+                console.log("pre")
+                return false
+            },
+            cancellablePre: true
+        }),
 
-    let testNormale = new injectClass({
-        file: "none",
-        method: "none",
-        function: "primo",
-        pre: () => {
-            console.log("pre")
-        }
-    });
 
-    let testNormale2 = new injectClass({
-        file: "none",
-        method: "none",
-        function: "secondo_multiplo=>variabile_funzione",
-        pre: () => {
-            console.log("pre")
-            return false
-        },
-        cancellable: true
-    });
+        "testNormale" : new injectClass({
+            file: "none",
+            method: "none",
+            function: "primo",
+            pre: () => {
+                console.log("pre")
+            }
+        }),
+
+        "testNormale2" : new injectClass({
+            file: "none",
+            method: "none",
+            function: "secondo_multiplo=>variabile_funzione",
+            pre: () => {
+                console.log("pre")
+                return false
+            },
+            cancellablePre: true
+        })
+    }
+
+    giveNames()
 
     calculateLinks()
 
@@ -78,18 +83,51 @@
     /// Start to inject
     // Get every functions, calculate the idx and put everything in a array
     let toInject = []
-    for(let i = 0; i < thingsToInject.length; i++) {
-        const functionToInject = findFunction(thingsToInject[i].function, output, thingsToInject[i].function)
+    thingsToInject.forEach(e => {
+        const functionToInject = findFunction(e.function, output, e.function)
         toInject.push({
-            inject: thingsToInject[i],
-            function: functionToInject,
+            inject: e,
             idx: calculateIdx(functionToInject)
         })
-    }
+    })
     // Now, because of how it's done, i have to sort everything
     sortIdx(toInject)
     // We can finally inject
     let copyHtml = html;
+    for(let i = 0; i < toInject.length; i++) {
+
+        let htmlToInspect = copyHtml.substr(toInject[i].idx);
+        let modified = 0;
+
+        if (toInject[i].inject.post !== null) {
+
+        }
+
+        if (toInject[i].inject.at !== null) {
+
+        }
+
+        if (toInject[i].inject.pre !== null) {
+            let start = htmlToInspect.indexOf('{') + 1;
+            let preHtml = copyHtml.substr(0, toInject[i].idx + start);
+
+            let toAdd;
+
+            if (toInject[i].inject.cancellablePre) {
+                toAdd = "if (functionsToInject." + toInject[i].inject.name + ".pre()) return;"
+            } else toAdd = "functionsToInject." + toInject[i].inject.name + ".pre();";
+
+            let postHtml = copyHtml.substr(toInject[i].idx + start);
+            copyHtml = preHtml + toAdd + postHtml;
+
+            modified += toAdd.length;
+        }
+
+        for(let j = i + 1; j < toInject.length; j++)
+            toInject[j].index += modified
+
+
+    }
 
 </script>
 </body>

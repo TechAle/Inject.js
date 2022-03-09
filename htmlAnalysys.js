@@ -80,7 +80,7 @@ function getLenghtBody(script, nameFunction) {
     return lastIdx + start;
 }
 
-function getFunctions(scripts, inside = false) {
+function getFunctions(scripts, inside = false, father = null) {
     let output = [];
 
     // For every scripts
@@ -92,7 +92,9 @@ function getFunctions(scripts, inside = false) {
                 console.log("Script " + (i + 1) + ":")
         }
         output.push([])
+        let toAdd = scripts[i].start;
         // Iterate for every functions
+        let idxNew = 0;
         while (true) {
             // Check if there is a function
             let idx = scripts[i].script.indexOf("function");
@@ -153,17 +155,25 @@ function getFunctions(scripts, inside = false) {
                     console.log("Function: " + name)
                     console.log("Body: " + scripts[i].script.substr(0, bodyOutput + 1))
                 }
+
+                output[i].push({
+                    name: name,
+                    idx: idx + start + 1 + toAdd,
+                    father: father,
+                    insideFunctions: null
+                })
+
                 // Check if there are functions inside
-                let insideFunctions = getFunctions([{script: scripts[i].script.substr(0, bodyOutput + 1), start: 0}], true)
+                output[i][idxNew].insideFunctions = getFunctions([{
+                        script: scripts[i].script.substr(0, bodyOutput + 1),
+                        start: 0
+                    }], true,
+                    output[i][idxNew])
+                toAdd += bodyOutput + idx + start + 1;
 
 
                 scripts[i].script = scripts[i].script.substr(bodyOutput + 1)
-                output[i].push({
-                    name: name,
-                    idx: idx + start + 1 + scripts[i].start,
-                    insideFunctions: insideFunctions
-                })
-
+                idxNew++;
             }
         }
     }

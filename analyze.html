@@ -17,7 +17,11 @@
             function: "testNew",
             pre: () => {
                 console.log("pre")
+                this.returnValue = 1;
                 return false
+            },
+            post: () => {
+                console.log("Please works")
             },
             cancellablePre: true
         }),
@@ -98,9 +102,19 @@
 
         let htmlToInspect = copyHtml.substr(toInject[i].idx);
         let modified = 0;
+        let start, preHtml, toAdd, postHtml;
 
         if (toInject[i].inject.post !== null) {
-
+            // Where we are going to inject
+            start = getLenghtBody(htmlToInspect, toInject[i].inject.function);
+            // Create the html
+            preHtml = copyHtml.substr(0, toInject[i].idx + start);
+            toAdd = " functionsToInject." + toInject[i].inject.name + ".post();";
+            postHtml = copyHtml.substr(toInject[i].idx + start)
+            // New html
+            copyHtml = preHtml + toAdd + postHtml;
+            // Index to add
+            modified += toAdd.length
         }
 
         if (toInject[i].inject.at !== null) {
@@ -108,21 +122,21 @@
         }
 
         if (toInject[i].inject.pre !== null) {
-            let start = htmlToInspect.indexOf('{') + 1;
-            let preHtml = copyHtml.substr(0, toInject[i].idx + start);
-
-            let toAdd;
-
+            // Where we are going to inject
+            start = htmlToInspect.indexOf('{') + 1;
+            // Create the html
+            preHtml = copyHtml.substr(0, toInject[i].idx + start);
             if (toInject[i].inject.cancellablePre) {
-                toAdd = "if (functionsToInject." + toInject[i].inject.name + ".pre()) return;"
+                toAdd = "if (functionsToInject." + toInject[i].inject.name + ".pre()) return functionsToInject." + toInject[i].inject.name + ".toReturn();";
             } else toAdd = "functionsToInject." + toInject[i].inject.name + ".pre();";
-
-            let postHtml = copyHtml.substr(toInject[i].idx + start);
+            postHtml = copyHtml.substr(toInject[i].idx + start);
+            // New html
             copyHtml = preHtml + toAdd + postHtml;
-
+            // Index to add
             modified += toAdd.length;
         }
 
+        // Update for everyone else the index
         for(let j = i + 1; j < toInject.length; j++)
             toInject[j].index += modified
 

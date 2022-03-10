@@ -25,8 +25,10 @@ class injectClass {
         else this.post = null
         this.cancellablePre = params.cancellablePre === undefined ? false : params.cancellablePre;
         this.cancellableAt = params.cancellableAt === undefined ? false : params.cancellableAt;
-        this.cancellablePost = params.cancellablePost === undefined ? false : params.cancellablePost;
+        if (params.cancellablePost !== undefined && params.cancellablePost === true)
+            throw "Why cancelling a function at the end of a function?"
         everyModifications.push(this)
+        this.returnValue = undefined
     }
 
     pre() {
@@ -38,6 +40,10 @@ class injectClass {
     }
 
     post() {
+
+    }
+
+    toReturn() {
 
     }
 

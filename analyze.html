@@ -45,12 +45,21 @@
                 return false
             },
             cancellablePre: true
+        }),
+
+        "testAt" : new injectClass({
+            file: "none",
+            method: "none",
+            function: "nuovo_script_multiplo=>normale_dentro",
+            at: () => {
+                console.log("ciao")
+            },
+            line: "console.log#1",
+            cancellableAt: true
         })
     }
 
-    giveNames()
-
-    calculateLinks()
+    startIndexing()
 
     // Here we get as input the html
     let html = "<html lang='it'><script> var token = 'si'; function primo(){var a = 0} " +
@@ -59,6 +68,10 @@
         "}function testNew(){var a = 0}<\/script><script>function nuovo_script_multiplo() {" +
         "function normale_dentro() {" +
         "var c = 0;" +
+        "var d = 10;" +
+        "var e = 20;" +
+        "console.log(c+d+e)" +
+        "console.log(c+d+e)" +
         "}" +
         "}<\/script></html>"
 
@@ -109,7 +122,9 @@
             start = getLenghtBody(htmlToInspect, toInject[i].inject.function);
             // Create the html
             preHtml = copyHtml.substr(0, toInject[i].idx + start);
-            toAdd = " functionsToInject." + toInject[i].inject.name + ".post();";
+            if (toInject[i].inject.cancellablePost) {
+                toAdd = "if (functionsToInject." + toInject[i].inject.name + ".post()) return functionsToInject." + toInject[i].inject.name + ".toReturn();";
+            } else toAdd = "functionsToInject." + toInject[i].inject.name + ".post();";
             postHtml = copyHtml.substr(toInject[i].idx + start)
             // New html
             copyHtml = preHtml + toAdd + postHtml;
@@ -118,6 +133,40 @@
         }
 
         if (toInject[i].inject.at !== null) {
+            /// There, we have to check where we are going to inject
+            // Get body of the function
+            start = htmlToInspect.indexOf('{') + 1;
+            let bodyLen = getLenghtBody(htmlToInspect, toInject[i].inject.function) - 2;
+            let body = copyHtml.substr(toInject[i].idx + start, bodyLen)
+            // Get what we have to inject
+            let line = toInject[i].inject.line;
+            let split = toInject[i].inject.line.split("#");
+            let n = 1
+            if (split.length === 2)
+                n = parseInt(split[1])
+            line = split[0]
+
+            // Iterate for the body of the function for finding the line we want
+            let idx = 0;
+            let idxBefore = 0;
+            for(let j = 0; j < n; j++) {
+                body = body.substr(idx + (idxBefore === 0 ? 0 : line.length))
+                idxBefore += idx + line.length
+                idx = body.indexOf(line)
+                if (idx === -1)
+                    throw "Line not found"
+            }
+            start += idx + idxBefore - line.length;
+            // Add everything
+            preHtml = copyHtml.substr(0, toInject[i].idx + start);
+            if (toInject[i].inject.cancellableAt) {
+                toAdd = "if (functionsToInject." + toInject[i].inject.name + ".at()) return functionsToInject." + toInject[i].inject.name + ".toReturn();";
+            } else toAdd = "functionsToInject." + toInject[i].inject.name + ".at();";
+            postHtml = copyHtml.substr(toInject[i].idx + start);
+            // New html
+            copyHtml = preHtml + toAdd + postHtml;
+            // Index to add
+            modified += toAdd.length;
 
         }
 
@@ -138,7 +187,7 @@
 
         // Update for everyone else the index
         for(let j = i + 1; j < toInject.length; j++)
-            toInject[j].index += modified
+            toInject[j].idx += modified
 
 
     }

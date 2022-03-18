@@ -17,16 +17,17 @@ class injectClass {
         if (params.pre !== undefined)
             this.pre = params.pre;
         else this.pre = null
-        if (params.at !== undefined)
+        if (params.at !== undefined) {
             this.at = params.at;
+            this.line = params.line
+        }
         else this.at = null
         if (params.post !== undefined)
             this.post = params.post;
         else this.post = null
         this.cancellablePre = params.cancellablePre === undefined ? false : params.cancellablePre;
         this.cancellableAt = params.cancellableAt === undefined ? false : params.cancellableAt;
-        if (params.cancellablePost !== undefined && params.cancellablePost === true)
-            throw "Why cancelling a function at the end of a function?"
+        this.cancellablePost = params.cancellablePost === undefined ? false : params.cancellablePost;
         everyModifications.push(this)
         this.returnValue = undefined
     }

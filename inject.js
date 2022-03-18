@@ -1,6 +1,11 @@
 everyModifications = []
 links = []
 
+function startIndexing() {
+    calculateLinks()
+    giveNames()
+}
+
 function calculateLinks() {
     links = []
     everyModifications.forEach(e => {

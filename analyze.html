@@ -11,6 +11,16 @@
 <script>
 
     const functionsToInject = {
+
+        "scriptBody" : new injectClass({
+            file: "none",
+            method: "none",
+            function: "none",
+            post: () => {
+
+            }
+        }),
+
         "testNormale3" : new injectClass({
             file: "none",
             method: "none",
@@ -55,7 +65,6 @@
                 console.log("ciao")
             },
             line: "console.log#1",
-            cancellableAt: true
         })
     }
 
@@ -63,7 +72,7 @@
 
     // Here we get as input the html
     let html = "<html lang='it'><script> var token = 'si'; function primo(){var a = 0} " +
-        "function secondo_multiplo(){" +
+        "var d = 'no';function secondo_multiplo(){" +
         "var variabile_funzione = function (a,b) {console.log('ciao')}" +
         "}function testNew(){var a = 0}<\/script><script>function nuovo_script_multiplo() {" +
         "function normale_dentro() {" +
@@ -73,7 +82,12 @@
         "console.log(c+d+e)" +
         "console.log(c+d+e)" +
         "}" +
-        "}<\/script></html>"
+    "}<\/script></html>"
+
+    // Here there will be a section for the file name
+
+    // Inject things in the script
+    html = injectGlobal(html, everyModifications)
 
     // First we have to get every functions
     var output = analyzeHtml(html)
@@ -101,11 +115,18 @@
     // Get every functions, calculate the idx and put everything in a array
     let toInject = []
     thingsToInject.forEach(e => {
-        const functionToInject = findFunction(e.function, output, e.function)
-        toInject.push({
-            inject: e,
-            idx: calculateIdx(functionToInject)
-        })
+        let idx;
+        // For none functions, we have to do different things
+        if (e.function !== "none") {
+            // For finding functions
+            const functionToInject = findFunction(e.function, output, e.function)
+            idx = calculateIdx(functionToInject)
+
+            toInject.push({
+                inject: e,
+                idx: idx
+            })
+        }
     })
     // Now, because of how it's done, i have to sort everything
     sortIdx(toInject)
@@ -191,6 +212,8 @@
 
 
     }
+
+    console.log(copyHtml)
 
 </script>
 </body>
